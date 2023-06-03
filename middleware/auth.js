@@ -4,17 +4,22 @@ require('dotenv').config()
 
 // Authorize user
 const Auth = (req, res, next) => {
-    const token = req.cookies.token;
-    if (token) {
-        jwt.verify(token, process.env.JWTSECRET, (err, decodedToken) => {
-            if (err) {
-                res.redirect('/login');
-            } else {
-                next();
-            }
-        });
-    } else {
-        res.redirect('/login');
+    if (req.cookies.token) {
+        const token = req.cookies.token;
+        if (token) {
+            jwt.verify(token, process.env.JWTSECRET, (err, decodedToken) => {
+                if (err) {
+                    res.redirect('/login');
+                } else {
+                    next();
+                }
+            });
+        } else {
+            res.redirect('/login');
+        }
+    }
+    if(req.user){
+        req.user ? next() : res.sendStatus(401);
     }
 }
 
